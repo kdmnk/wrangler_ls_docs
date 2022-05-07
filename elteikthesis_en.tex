@@ -5,30 +5,30 @@
 	%twoside, % Double sided format
 	%draft, % Quicker draft compilation without rendering images
 	%final, % Set final to hide todos
-]{elteikthesis}[2022/04/30]
+]{elteikthesis}[2022/05/15]
 
 % The minted package is also supported for source highlighting
 % See minted-intregration.tex for example
 %\usepackage[newfloat]{minted}
 
 % Document's metadata
-\title{Title of the thesis} % title
+\title{Implementing the Language Server Protocol in the Wrangler Erlang refactoring tool} % title
 \date{2022} % year of defense
 
 % Author's metadata
-\author{John Smith}
+\author{Dominik Katkó}
 \degree{Computer Science BSc}
 
 % Superivsor(s)' metadata
-\supervisor{John Doe} % internal supervisor's name
-\affiliation{Assistant Lecturer} % internal supervisor's affiliation
-%\extsupervisor{Jane Doe} % external supervisor's name
-%\extaffiliation{Senior Developer} % external supervisor's affiliation
+\supervisor{Dániel Horpácsi} % internal supervisor's name
+\affiliation{Assistant Professor} % internal supervisor's affiliation
+\extsupervisor{Simon J. Thompson} % external supervisor's name
+\extaffiliation{Professor} % external supervisor's affiliation
 
 % University's metadata
 \university{Eötvös Loránd University} % university's name
 \faculty{Faculty of Informatics} % faculty's name
-\department{Dept. of Software Technology and Methodology} % department's name
+\department{Dept. of Programming Languages and Compilers} % department's name
 \city{Budapest} % city
 \logo{elte_cimer_szines} % logo
 
@@ -43,7 +43,7 @@
 \documentlang{english}
 
 % List of todos (not in the final document)
-%\listoftodos[\todolabel]
+\listoftodos[\todolabel]
 
 % Title page (mandatory)
 \maketitle
@@ -73,9 +73,9 @@
 In case your thesis received financial support from a project or the university, it is usually required to indicate the proper attribution in the thesis itself. Special thanks can also be expressed towards teachers, fellow students and colleagues who helped you in the process of creating your thesis.
 
 % Appendices (optional) - useful for detailed information in long tables, many and/or large figures, etc.
-\appendix
-\input{samples_en/sim.tex}
-\cleardoublepage
+%\appendix
+%\input{samples_en/sim.tex}
+%\cleardoublepage
 
 % Bibliography (mandatory)
 \phantomsection
@@ -84,28 +84,28 @@ In case your thesis received financial support from a project or the university,
 \cleardoublepage
 
 % List of figures (optional) - useful over 3-5 figures
-\phantomsection
-\addcontentsline{toc}{chapter}{\lstfigurelabel}
-\listoffigures
-\cleardoublepage
+%\phantomsection
+%\addcontentsline{toc}{chapter}{\lstfigurelabel}
+%\listoffigures
+%\cleardoublepage
 
 % List of tables (optional) - useful over 3-5 tables
-\phantomsection
-\addcontentsline{toc}{chapter}{\lsttablelabel}
-\listoftables
-\cleardoublepage
+%\phantomsection
+%\addcontentsline{toc}{chapter}{\lsttablelabel}
+%\listoftables
+%\cleardoublepage
 
 % List of algorithms (optional) - useful over 3-5 algorithms
-\phantomsection
-\addcontentsline{toc}{chapter}{\lstalgorithmlabel}
-\listofalgorithms
-\cleardoublepage
+%\phantomsection
+%\addcontentsline{toc}{chapter}{\lstalgorithmlabel}
+%\listofalgorithms
+%\cleardoublepage
 
 % List of codes (optional) - useful over 3-5 code samples
-\phantomsection
-\addcontentsline{toc}{chapter}{\lstcodelabel}
-\lstlistoflistings
-\cleardoublepage
+%\phantomsection
+%\addcontentsline{toc}{chapter}{\lstcodelabel}
+%\lstlistoflistings
+%\cleardoublepage
 
 % List of symbols (optional)
 %\printnomenclature
