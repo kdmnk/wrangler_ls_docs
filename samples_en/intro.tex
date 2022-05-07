@@ -1,17 +1,43 @@
 \chapter{Introduction}
 \label{ch:intro}
 
+\todo{Add notes somewhere about updating Wrangler to be up to date}
+
 \section{Motivation}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eu egestas mauris. Quisque nisl elit, varius in erat eu, dictum commodo lorem. Sed commodo libero et sem laoreet consectetur. Fusce ligula arcu, vestibulum et sodales vel, venenatis at velit \cite{dahl1972structured}. Aliquam erat volutpat. Proin condimentum accumsan velit id hendrerit. Cras egestas arcu quis felis placerat, ut sodales velit malesuada. Maecenas et turpis eu turpis placerat euismod.\footnote{Maecenas a urna viverra, scelerisque nibh ut, malesuada ex.}
+\todo{Introduction to refactorings.}
+
+Wrangler is a refactoring tool for Erlang programs that has embedded interfaces in Emacs and Eclipse.
+
+The popularity of these editors are pushed back by more modern development environments like Visual Studio Code. In 2019, only 4.5\% of developers used Emacs and 14.4\% used Eclipse \cite{DevSurvey}. Wrangler needs to widen its support for more and more text editors, otherwise the majority of developers won’t be able to use it.
+
+The interfaces in the mentioned text editors are ad-hoc, editor-specific implementations. 
+Developing new interfaces like these would take a long time and it would not be easily sustainable. 
+
+That is why we choose to make a language server for Wrangler that can respond to requests defined in the Language Server Protocol. This way, Wrangler can be used in any development tool adheres to the protocol.
 
 \section{The Erlang programming language}
 
+\todo{Introduction to the Erlang language.}
+
 \section{The Wrangler refactoring tool}
+
+Wrangler is an interactive refactoring tool for the Erlang programming language.
+
+"Wrangler’s refactorings cover structural changes such as function, variable and module renaming, function extraction and generalisation. Wrangler recognises macros in code, and can be used on a single file or across a whole project.
+
+Wrangler can also be used to locate and remove code clones, and to improve the module structure of projects.
+
+Wrangler is extensible, with an API for writing new refactorings and a DSL for scripting complex refactoring combinations.
+
+Wrangler also supports testing in EUnit, QuickCheck and Common Test, so your tests are refactored automatically when you refactor your code." \cite{WranglerHome}
 
 \section{Language Server Protocol}
 
+\todo{The concept of LSP}
+
 \section{Erlang Language Server}
 
+\todo{Introduce ELS}
 
-Aliquam suscipit dignissim tempor. Praesent tortor libero, feugiat et tellus porttitor, malesuada eleifend felis. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus \cite{cormen2009algorithms,krasner1988mvc}. Nullam eleifend imperdiet lorem, sit amet imperdiet metus pellentesque vitae. Donec nec ligula urna. Aliquam bibendum tempor diam, sed lacinia eros dapibus id. Donec sed vehicula turpis. Aliquam hendrerit sed nulla vitae convallis. Etiam libero quam, pharetra ac est nec, sodales placerat augue. \citeauthor{dijkstra1979goto} praesent eu consequat purus \cite{dijkstra1979goto}. 
+

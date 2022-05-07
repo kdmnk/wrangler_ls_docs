@@ -1,23 +1,114 @@
 \chapter{User documentation}
 \label{ch:user}
 
-Lorem ipsum dolor sit amet $\mathbb{N}$\nomenclature{$\mathbb{N}$}{Set of natural numbers}, consectetur adipiscing elit. Duis nibh leo, dapibus in elementum nec, aliquet id sem. Suspendisse potenti. Nullam sit amet consectetur nibh. Donec scelerisque varius turpis at tincidunt. Cras a diam in mauris viverra vehicula. Vivamus mi odio, fermentum vel arcu efficitur, lacinia viverra nibh. Aliquam aliquam ante mi, vel pretium arcu dapibus eu. Nulla finibus ante vel arcu tincidunt, ut consectetur ligula finibus. Mauris mollis lectus sed ipsum bibendum, ac ultrices erat dictum. Suspendisse faucibus euismod lacinia $\mathbb{Z}$\nomenclature{$\mathbb{Z}$}{Set of integer numbers}.
+The Wrangler Language Server is a tool that enables developers to use the refactorings defined in Wrangler through the Erlang Language Server.
 
+In this paper, the set up, the examples and the screenshots are presented for the development tool called Visual Studio Code owned my Microsoft. \todo{recompose}
 
-\section{Refactorings}
-
-\subsection{Example}
+Installing Wrangler includes installing the Wrangler Language Server, but it is started by and ran in the Erlang Language Server (that is started by and ran in the development tool). \todo{check phrasing}
+In order to use the Wrangler Language Server, further configuration is needed in the Erlang Language Server.
 
 \section{System requirements}
+
+The system requirements for the Wrangler Language Server is constrained by the underlying tools' (namely the Erlang Language Server, Wrangler itself and the development tool: Visual Studio Code) requirements:
+
+\begin{enumerate}
+    \item Hardware requirements: \todo{Check harware requirements}
+    \begin{itemize}
+        \item 1.6 GHz or faster processor is recommended by Visual Studio Code 
+        \cite{VSCodeRequirements}
+        \item 1 GB of RAM is recommended by Visual Studio Code  \cite{VSCodeRequirements}
+        \item 500\todo{+x} MB free space on the hard drive is needed to install Visual Studio Code, Wrangler and the Erlang
+    \end{itemize}
+    \item Software requirements:
+    \begin{itemize}
+        \item GNU/Linux or MacOS operating system \footnote{The Microsoft Windows operating system is restricted only by Wrangler`s currently outdated Windows installer.}
+        \item Erlang/OTP 24.0 or newer version.
+        \item \todo{Wrangler requirements - gcc?}
+    \end{itemize}
+    \item Other requirements:
+    \begin{itemize}
+        \item Administrator privileges on the operating system.
+    \end{itemize}
+\end{enumerate}
+
 
 \section{Installing and configuration}
 
 \subsection{Installing Wrangler}
+
+First, download or clone the Wrangler code base from its GitHub repository \cite{WranglerGitHub}. More information about cloning repositories can be found in GitHub Docs \cite{GitCloneTutorial}.
+
+Then build and install Wrangler with the command below \ref{src:install}.
+
+\lstset{caption={Build and install Wrangler}, label=src:install}
+\begin{lstlisting}[language=bash]
+  ./configure && make && sudo make install
+\end{lstlisting}
+
+More information and options about installing Wrangler can be found in the \emph{INSTALL} file located at Wrangler`s root directory.
+
+As mentioned, installing Wrangler will also install the Wrangler Language Server.
+
 \subsection{Installing Visual Studio Code}
+
+A detailed walk-through is available about installing Visual Studio Code at their website \cite{VSCodeDownload}.
+
 \subsection{Installing the Erlang Language Server}
+
+The Erlang Language Server for Visual Studio Code is available as a dedicated extension called \emph{Erlang LS} \cite{ELSExtension}.
+
+A guide to install the Erlang Language Server in Visual Studio Code (and also for other development tools) is available at their website \cite{ELSInstall}.
+
 \subsection{Configuring the Wrangler Language Server}
 
+A configuration file named \emph{erlang\_ls.config} should be placed in the root directory of every project where Wrangler need to be used.
+
+A configuration example \ref{src:wrangler-config-example} and the description of the parameters \ref{tab:wrangler-config-descr} are shown below.
+
+\lstset{caption={erlang\_ls.config example}, label=src:wrangler-config-example}
+\begin{lstlisting}
+wrangler:
+  enabled: true
+  path: "/path/to/wrangler/ebin" 
+  tab_with: 8
+  enabled_refactorings:
+    - "comment-out-spec"
+    - "fold-expression"
+    - "generalise-fun"
+    - "move-fun"
+    - "new-fun"
+    - "new-macro"
+    - "new-var"
+    - "rename-fun2"
+    - "rename-var"
+\end{lstlisting}
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ | m{0.3\textwidth} | m{0.1\textwidth} | m{0.5\textwidth} | }
+		\hline
+		\textbf{Parameter} & \textbf{Type} & \textbf{Description} \\
+		\hline \hline
+		\emph{enabled} & \emph{boolean} & \emph{true} if Wrangler should be enabled or \emph{false} if not. \\
+		\hline
+		\emph{path} & \emph{string?} & Only necessary when Wrangler is not installed system-wide. A path to Wrangler's compiled \emph{ebin} folder should be set. \\
+		\hline
+		\emph{tab\_with} & \emph{integer?} & The used tabulator width in the project. Defaults to 8 if not provided. \\
+		\hline
+		\emph{enabled\_refactorings} & \emph{string[]} & All the Wrangler refactoring`s identification values that are enabled.\\
+		\hline
+	\end{tabular}
+	\caption{Description of the configuration parameters}
+	\label{tab:wrangler-config-descr}
+\end{table}
+
+Further configuration options for the Erlang Language Server can be found at their website \cite{ELSConfig}.
+
 \section{Usage}
+
+The Erlang Language Server starts automatically when an Erlang file is opened in the code editor. If Wrangler is enabled, the Erlang Language Server loads and starts it during initialization. After that, the refactorings should be accessible.
 
 \subsection{General case}
 \subsection{Refactorings}
@@ -25,189 +116,4 @@ Lorem ipsum dolor sit amet $\mathbb{N}$\nomenclature{$\mathbb{N}$}{Set of natura
 \subsubsection{Rename Variable}
 \subsubsection{...}
 
-Etiam vel odio ante. Etiam pulvinar nibh quis massa auctor congue. Pellentesque quis odio vitae sapien molestie vestibulum sit amet et quam. Pellentesque vel dui eget enim hendrerit finibus at sit amet libero. Quisque sollicitudin ultrices enim, nec porta magna imperdiet vitae. Cras condimentum nunc dui, eget molestie nunc accumsan vel.
 
-\begin{itemize}
-	\item Fusce in aliquet neque, in pretium sem.
-	\item Donec tincidunt tellus id lectus pretium fringilla.
-	\item Nunc faucibus, erat pretium tempus tempor, tortor mi fringilla neque, ac congue ex dui vitae mauris.
-\end{itemize}
-
-Donec dapibus sodales ante, at scelerisque nunc laoreet sit amet. Mauris porttitor tincidunt neque, vel ullamcorper neque pulvinar et. Integer eu lorem euismod, faucibus lectus sed, accumsan felis. Nunc ornare mi at augue vulputate, eu venenatis magna mollis. Nunc sed posuere dui, et varius nulla. Sed mollis nibh augue, eget scelerisque eros ornare nec.
-
-\begin{enumerate}
-	\item\label{step:first} Donec pretium et quam a cursus. Ut sollicitudin tempus urna et mollis.
-	\item Aliquam et aliquam turpis, sed fermentum mauris. Nulla eget ex diam.
-	\item Donec eget tellus pharetra, semper neque eget, rutrum diam Step~\ref{step:first}.
-\end{enumerate}
-
-Praesent porta, metus eget eleifend consequat, eros ligula eleifend ex, a pellentesque mi est vitae urna. Vivamus turpis nunc, iaculis non leo eget, mattis vulputate tellus. Maecenas rutrum eros sem, pharetra interdum nulla porttitor sit amet. In vitae viverra ante. Maecenas sit amet placerat orci, sed tincidunt velit. Vivamus mattis, enim vel suscipit elementum, quam odio venenatis elit\footnote{Phasellus faucibus varius purus, nec tristique enim porta vitae.}, et mollis nulla nunc a risus. Praesent purus magna, tristique sed lacus sit amet, convallis malesuada magna. 
-
-\begin{description}
-	\item[Vestibulum venenatis] malesuada enim, ac auctor erat vestibulum et. Phasellus id purus a leo suscipit accumsan.
-	\item[Orci varius natoque] penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam interdum rhoncus nisl, vel pharetra arcu euismod sagittis. Vestibulum ac turpis auctor, viverra turpis at, tempus tellus.
-	\item[Morbi dignissim] erat ut rutrum aliquet. Nulla eu rutrum urna. Integer non urna at mauris scelerisque rutrum sed non turpis.
-\end{description}
-
-
-
-Phasellus ultricies, sapien sit amet ultricies placerat, velit purus viverra ligula, id consequat ipsum odio imperdiet enim:
-\begin{compactenum}
-	\item Maecenas eget lobortis leo.
-	\item Donec eget libero enim.
-	\item In eu eros a eros lacinia maximus ullamcorper eget augue.
-\end{compactenum}
-
-\bigskip
-
-In quis turpis metus. Proin maximus nibh et massa eleifend, a feugiat augue porta. Sed eget est purus. Duis in placerat leo. Donec pharetra eros nec enim convallis:
-\begin{compactitem}
-	\item Pellentesque odio lacus.
-	\item Maximus ut nisl auctor.
-	\item Sagittis vulputate lorem.
-\end{compactitem}
-
-\bigskip
-
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed lorem libero, dignissim vitae gravida a, ornare vitae est.
-\begin{compactdesc}
-	\item[Cras maximus] massa commodo pellentesque viverra.
-	\item[Morbi sit] amet ante risus. Aliquam nec sollicitudin mauris
-	\item[Ut aliquam rhoncus sapien] luctus viverra arcu iaculis posuere
-\end{compactdesc}
-
-
-Aliquam vehicula luctus mi a pretium. Nulla quam neque, maximus nec velit in, aliquam mollis tortor. Aliquam erat volutpat. Curabitur vitae laoreet turpis. Integer id diam ligula. Nulla sodales purus id mi consequat, eu venenatis odio pharetra. Cras a arcu quam. Suspendisse augue risus, pulvinar a turpis et, commodo aliquet turpis. Nulla aliquam scelerisque mi eget pharetra. Mauris sed posuere elit, ac lobortis metus. Proin lacinia sit amet diam sed auctor. Nam viverra orci id sapien sollicitudin, a aliquam lacus suscipit, Figure~\ref{fig:example-1}:
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.6\textwidth,height=100px]{elte_cimer_szines}
-	\caption{Quisque ac tincidunt leo}
-	\label{fig:example-1}
-\end{figure}
-
-Ut aliquet nec neque eget fermentum. Cras volutpat tellus sed placerat elementum. Quisque neque dui, consectetur nec finibus eget, blandit id purus. Nam eget ipsum non nunc placerat interdum.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.6\textwidth,height=100px,frame]{elte_cimer_szines}
-	\caption{Quisque ac tincidunt leo}
-\end{figure}
-
-In non ipsum fermentum urna feugiat rutrum a at odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla tincidunt mattis nisl id suscipit. Sed bibendum ac felis sed volutpat. Nam pharetra nisi nec facilisis faucibus. Aenean tristique nec libero non commodo. Nulla egestas laoreet tempus. Nunc eu aliquet nulla, quis vehicula dui. Proin ac risus sodales, gravida nisi vitae, efficitur neque, Figure~\ref{fig:example-2}:
-
-\begin{figure}[H]
-	\centering
-	\subcaptionbox{Vestibulum quis mattis urna}{
-		\includegraphics[width=0.45\linewidth]{elte_cimer_szines}}
-	\hspace{5pt}
-	\subcaptionbox{Donec hendrerit quis dui sit amet venenatis}{
-		\includegraphics[width=0.45\linewidth]{elte_cimer_szines}}
-	\caption{Aenean porttitor mi volutpat massa gravida}
-	\label{fig:example-2}
-\end{figure}
-
-Nam et nunc eget elit tincidunt sollicitudin. Quisque ligula ipsum, tempor vitae tortor ut, commodo rhoncus diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus vehicula quam dui, eu convallis metus porta ac.
-
-
-Nam magna ex, euismod nec interdum sed, sagittis nec leo. Nam blandit massa bibendum mattis tristique. Phasellus tortor ligula, sodales a consectetur vitae, placerat vitae dolor. Aenean consequat in quam ac mollis. 
-
-\begin{table}[H]
-	\centering
-	\begin{tabular}{ | m{0.25\textwidth} | m{0.65\textwidth} | }
-		\hline
-		\textbf{Phasellus tortor} & \textbf{Aenean consequat} \\
-		\hline \hline
-		\emph{Sed malesuada} & Aliquam aliquam velit in convallis ultrices. \\
-		\hline
-		\emph{Purus sagittis} &  Quisque lobortis eros vitae urna lacinia euismod. \\
-		\hline
-		\emph{Pellentesque} & Curabitur ac lacus pellentesque, eleifend sem ut, placerat enim. Ut auctor tempor odio ut dapibus. \\
-		\hline
-	\end{tabular}
-	\caption{Maecenas tincidunt non justo quis accumsan}
-	\label{tab:example-1}
-\end{table}
-
-
-Mauris a dapibus lectus. Vestibulum commodo nibh ante, ut maximus magna eleifend vel. Integer vehicula elit non lacus lacinia, vitae porttitor dolor ultrices. Vivamus gravida faucibus efficitur. Ut non erat quis arcu vehicula lacinia. Nulla felis mauris, laoreet sed malesuada in, euismod et lacus. Aenean at finibus ipsum. Pellentesque dignissim elit sit amet lacus congue vulputate.
-
-\begin{table}[htb]
-	\centering
-	\begin{tabular}{ | c | r | r | r | r | r | r | }
-		\hline
-		\multirow{2}{*}{\textbf{Quisque}} & \multicolumn{2}{ c | }{\textbf{Suspendisse}} & \multicolumn{2}{ c | }{\textbf{Aliquam}} & \multicolumn{2}{ c | }{\textbf{Vivamus}} \\
-		\cline{2-7}
-		& Proin & Nunc & Proin & Nunc & Proin & Nunc \\
-		\hline \hline		
-		Leo & 2,80 MB & 100\% & 232 KB & 8,09\% & 248 KB & 8,64\% \\
-		\hline
-		Vel & 9,60 MB & 100\% & 564 KB & 5,74\% & 292 KB & 2,97\% \\
-		\hline
-		Auge & 78,2 MB & 100\% & 52,3 MB & 66,88\% & 3,22 MB & 4,12\% \\
-		\hline 
-	\end{tabular}
-	\caption[Rövid cím a táblázatjegyzékbe]{Vivamus ac arcu fringilla, fermentum neque sed, interdum erat. Mauris bibendum mauris vitae enim mollis, et eleifend turpis aliquet.}
-	\label{tab:example-2}
-\end{table}
-
-
-Nunc porta placerat leo, sit amet porttitor dui porta molestie. Aliquam at fermentum mi. Maecenas vitae lorem at leo tincidunt volutpat at nec tortor. Vivamus semper lacus eu diam laoreet congue. Vivamus in ipsum risus. Nulla ullamcorper finibus mauris non aliquet. Vivamus elementum rhoncus ex ut porttitor.
-
-\begin{center}
-	\begin{longtable}{ | p{0.3\textwidth} | p{0.7\textwidth} | }
-		
-		\hline
-		\multicolumn{2}{|c|}{\textbf{Praesent aliquam mauris enim}}
-		\\ \hline
-		
-		\emph{Suspendisse potenti} & \emph{Lorem ipsum dolor sit amet}
-		\\ \hline \hline
-		\endfirsthead % table header on first page
-		
-		\hline
-		\emph{Suspendisse potenti} & \emph{Lorem ipsum dolor sit amet}
-		\\ \hline \hline
-		\endhead % table header on further pages
-		
-		\hline
-		\endfoot % table footer on previous pages
-		
-		\endlastfoot % table footer on last page
-		
-		\emph{Praesent}
-		& Nulla ultrices et libero sit amet fringilla. Nunc scelerisque ante tempus sapien placerat convallis.
-		\\ \hline
-		
-		\emph{Luctus}
-		& Integer hendrerit erat massa, non hendrerit risus convallis at. Curabitur ultrices, justo in imperdiet condimentum, neque tortor luctus enim, luctus posuere massa erat vitae nibh.
-		\\ \hline
-		
-		\emph{Egestas}
-		& Duis fermentum feugiat augue in blandit. Mauris a tempor felis. Pellentesque ultricies tristique dignissim. Pellentesque aliquam semper tristique. Nam nec egestas dolor. Vestibulum id elit quis enim fringilla tempor eu a mauris. Aliquam vitae lacus tellus. Phasellus mauris lectus, aliquam id leo eget, auctor dapibus magna. Fusce lacinia felis ac elit luctus luctus.
-		\\ \hline
-		
-		\emph{Dignissim}
-		& Praesent aliquam mauris enim, vestibulum posuere massa facilisis in. Suspendisse potenti. Nam quam purus, rutrum eu augue ut, varius vehicula tellus. Fusce dui diam, aliquet sit amet eros at, sollicitudin facilisis quam. Phasellus tempor metus vel augue gravida pretium. Proin aliquam aliquam blandit. Nulla id tempus mi. Fusce in aliquam tortor.
-		\\ \hline
-		
-		\emph{Pellentesque}
-		& Donec felis nibh, imperdiet a arcu non, vehicula gravida nibh. Quisque interdum sapien eu massa commodo, ac elementum felis faucibus.
-		\\ \hline
-		
-		\emph{Molestie}
-		& Cras ullamcorper tellus et auctor ultricies. Maecenas tincidunt euismod lectus nec venenatis. Suspendisse potenti. Pellentesque pretium nunc ut euismod cursus. Nam venenatis condimentum quam. Curabitur suscipit efficitur aliquet. Interdum et malesuada fames ac ante ipsum primis in faucibus.
-		\\ \hline
-		
-		\emph{Vivamus semper}
-		& In purus purus, faucibus eu libero vulputate, tristique sodales nunc. Nulla ut gravida dolor. Fusce vel pellentesque mi, vel efficitur eros. Nunc vitae elit tellus. Sed vestibulum auctor consequat. 
-		\\ \hline
-		
-		\emph{Condimentum}
-		& Nulla scelerisque, leo et facilisis pretium, risus enim cursus turpis, eu suscipit ipsum ipsum in mauris. Praesent eget pulvinar ipsum, suscipit interdum nunc. Nam varius massa ut justo ullamcorper sollicitudin. Vivamus facilisis suscipit neque, eu fermentum risus. Ut at mi mauris.
-		\\ \hline
-		
-		\caption{Praesent ullamcorper consequat tellus ut eleifend}
-		\label{tab:example-3}		
-	\end{longtable}
-\end{center}
