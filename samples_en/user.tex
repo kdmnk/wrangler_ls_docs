@@ -110,20 +110,40 @@ Further configuration options for the Erlang Language Server can be found at the
 
 The Erlang Language Server starts automatically when an Erlang file is opened in the code editor. If Wrangler is enabled, the Erlang Language Server loads and starts it during initialization. After that, the refactorings should be accessible.
 
-\subsection{General case}
+We classify the supported refactorings into two (plus one) groups based on their user input needs. We distinguish refactorings that require a simple value as its input (for example, a new argument's name) and refactorings for which simple inputs are not enough. In this paper, we call these groups \emph{simple} and \emph{complex} refactorings\footnote{The appelations do not imply any relation with the complexity of the refactorings' implementation.}. 
 
+There is also a third category for special, module related refactorings described below.
 
+In the sections below, after presenting the general use cases of the refactorings depending on the mentioned input types, the list of the supported refactorings are shown. In the list, after each refactoring's name, their identification value is presented, along with a brief description, their precondition, side condition(s) and an example. The preconditions show what the user need to do to get the refactoring offered by the language server.
 
+\subsection{Simple refactorings}
+
+\todo{add description and edit use case diagram}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.6\textwidth]{images/use_case.png}
-	\caption{Use Case Diagram}
+	\includegraphics[width=1\textwidth]{images/use_case_1.png}
+	\caption{Use case diagram for simple refactorings}
 	\label{fig:usecase}
 \end{figure}
 
-\subsection{List of the supported refactorings}
+\begin{description}
+	\item[Generalise function / \textit{generalise-fun}:] 
+	Refactor the highlighted expression as the function's new argument. 
+	\\Precondition: highlight an expression.
+	\\Asked user input: A variable name for the function's new argument. 
+	\\Before refactoring:
+	\todo{screenshots}
+	\\After refactoring:
+	\\Side effect: ...
+	\item[Introduce new variable / \textit{new-var}] Refactor the highlighted expression as a new variable.
+	\todo{add the remaining refactorings}
+\end{description}
 
-\subsubsection{Rename Variable}
-\subsubsection{...}
+\subsection{Complex refactorings}
 
+\todo{use case, description, and example for Wrangler Forms}
+\todo{Fold refactoring}
 
+\subsection{Other refactorings}
+
+\todo{comment out spec refactoring}

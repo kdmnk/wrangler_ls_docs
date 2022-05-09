@@ -1,119 +1,235 @@
 \chapter{Developer documentation}
 \label{ch:impl}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis nibh leo, dapibus in elementum nec, aliquet id sem. Suspendisse potenti. Nullam sit amet consectetur nibh. Donec scelerisque varius turpis at tincidunt.
-
-
 \section{The task}
+
+My task was to create a generic integration between Wrangler and trending IDEs (such as Visual Studio Code) by implementing the Language Server Protocol (LSP) in the Wrangler project.
+
+The \emph{Wrangler Language Server} is a new component that provides the functionalities of the Wrangler refactoring tool (such as function and module renaming, function extraction and elimination) to any LSP-compatible code editor. We choose to do this by extending the \emph{Erlang Language Server}, an existing language server implementing the protocol.
+
+In particular, \emph{Wrangler Language Server} is part of the Wrangler project, thus it is written in Erlang, and it is running inside the \emph{Erlang Language Server} server.
+
+For this task, I had to partly redesign Wrangler’s API, and tailor the implementation of refactoring interactions to take full advantage of the Language Server Protocol’s capabilities. 
+
+This work involved the investigation of how non-standard inputs and interactions can be implemented on top of the basic features of the Language Server Protocol.
+
+It was an additional requirement that the Wrangler Language Server had to be idiomatic, and it had to be conventional with the Erlang Language Server's structure. 
+
+Furthermore, the solution is expected to require no manual setup apart from doing some simple configuration.
+
+\section{Design choices}
+
+\todo{Missing LSP inputs, Why extending ELS}
 
 \section{Used language features defined in the Language Server Protocol}
 
-\section{Implementation}
-\subsection{Extending the Erlang Language Server}
-\subsection{Refactorings with simple inputs}
-\subsection{Wrangler forms}
+Apart from the base protocol for the communication between language servers and development tools, the Language Server Protocol defines various language features. These include requests like \textit{go to implementation, completion, and formatting}. To use some of these features, both the language servers and code editors need to support these one by one. Registering these are defined also in the protocol.\cite{LSP}
 
-\begin{definition}
-Mauris tristique sollicitudin ultrices. Etiam tristique quam sit amet metus dictum imperdiet. Nunc id lorem sed nisl pulvinar aliquet vitae quis arcu. Morbi iaculis eleifend porttitor.
-\end{definition}
+In the \emph{Wrangler Language Server}, the following LSP features are used:
 
-Maecenas rutrum eros sem, pharetra interdum nulla porttitor sit amet. In vitae viverra ante. Maecenas sit amet placerat orci, sed tincidunt velit. Vivamus mattis, enim vel suscipit elementum, quam odio venenatis elit, et mollis nulla nunc a risus. Praesent purus magna, tristique sed lacus sit amet, convallis malesuada magna. Phasellus faucibus varius purus, nec tristique enim porta vitae.
+\begin{itemize}
+    \item textDocument/codeLens
+    \item textDocument/codeAction
+    \item textDocument/documentHighlight
+    \item textDocument/semanticTokens/full
+    \item workspace/executeCommand
+    \item window/showMessage
+    \todo{What do we use these for?}
+\end{itemize}
 
-\begin{theorem}
-Nulla finibus ante vel arcu tincidunt, ut consectetur ligula finibus. Mauris mollis lectus sed ipsum bibendum, ac ultrices erat dictum. Suspendisse faucibus euismod lacinia. Etiam vel odio ante.
-\end{theorem}
-\begin{proof}
-Etiam pulvinar nibh quis massa auctor congue. Pellentesque quis odio vitae sapien molestie vestibulum sit amet et quam. Pellentesque vel dui eget enim hendrerit finibus at sit amet libero. Quisque sollicitudin ultrices enim, nec porta magna imperdiet vitae. Cras condimentum nunc dui.
-\end{proof}
-
-Donec dapibus sodales ante, at scelerisque nunc laoreet sit amet. Mauris porttitor tincidunt neque, vel ullamcorper neque pulvinar et. Integer eu lorem euismod, faucibus lectus sed, accumsan felis. 
-
-\begin{remark}
-Nunc ornare mi at augue vulputate, eu venenatis magna mollis. Nunc sed posuere dui, et varius nulla. Sed mollis nibh augue, eget scelerisque eros ornare nec. Praesent porta, metus eget eleifend consequat, eros ligula eleifend ex, a pellentesque mi est vitae urna. Vivamus turpis nunc, iaculis non leo eget, mattis vulputate tellus.
-\end{remark}
-
-Fusce in aliquet neque, in pretium sem. Donec tincidunt tellus id lectus pretium fringilla. Nunc faucibus, erat pretium tempus tempor, tortor mi fringilla neque, ac congue ex dui vitae mauris. Donec pretium et quam a cursus.
+These are well defined in the protocol \cite{LSP}, we only discuss their usage later in the paper.
 
 \begin{note}
-Aliquam vehicula luctus mi a pretium. Nulla quam neque, maximus nec velit in, aliquam mollis tortor. Aliquam erat volutpat. Curabitur vitae laoreet turpis. Integer id diam ligula.
+The development tool presented in this paper, Visual Studio Code supports all the above LSP features. 
 \end{note}
 
-Ut sollicitudin tempus urna et mollis. Aliquam et aliquam turpis, sed fermentum mauris. Nulla eget ex diam. Donec eget tellus pharetra, semper neque eget, rutrum diam.
+The protocol version \emph{3.16} were used during my thesis.
 
+\section{Implementation}
 
-Duis suscipit ipsum nec urna blandit, $2 + 2 = 4$ pellentesque vehicula quam fringilla. Vivamus euismod, lectus sit amet euismod viverra, dolor metus consequat sapien, ut hendrerit nisl nulla id nisi. Nam in leo eu quam sollicitudin semper a quis velit.
+The current implementation of the \emph{Wrangler Language Server} consists of three part:
 
-$$a^2 + b^2 = c^2$$
+\begin{itemize}
+    \item Extending the Erlang Language Server to supplement their LSP responses with the Wrangler Language Server's features.
+    \item Creating a new component in Wrangler to provide additional functionalities for the Erlang Language Server. This is the Wrangler Language Server alone.
+    \item Adding a middleware in the Erlang Language Server's Visual Studio Code extension to handle additional user inputs. 
+\end{itemize}
 
-Phasellus mollis, elit sed convallis feugiat, dolor quam dapibus nibh, suscipit consectetur lacus risus quis sem. Vivamus scelerisque porta odio, vitae euismod dolor accumsan ut.
+\todo{diagram??}
 
-In mathematica, identitatem Euleri (equation est scriptor vti etiam notum) sit aequalitatem Equation~\ref{eq:euler}:
-\begin{equation}\label{eq:euler}
-e^{i \times \pi} + 1 = 0
-\end{equation}
+\subsection{Extending the Erlang Language Server}
 
+The Erlang Language Server introduced separate erlang modules called \tt provider\rm s for each language feature (for example, code lenses). These providers implement the \tt els\_provider\rm  erlang behaviour and handle the corresponding requests coming from the client. \todo{diagram??}
 
+In the case of code lenses, the different lenses are places in their own modules. Each code lens module implements the \tt els\_code\_lens\rm  erlang behaviour. The provider gather the available code lenses through these modules. These are expressed in more detail in the next section since the Wrangler Language Server has corresponding modules. \label{src:behaviours} 
 
-Nulla sodales purus id mi consequat, eu venenatis odio pharetra. Cras a arcu quam. Suspendisse augue risus, pulvinar a turpis et, commodo aliquet turpis. Nulla aliquam scelerisque mi eget pharetra. Mauris sed posuere elit, ac lobortis metus. Proin lacinia sit amet diam sed auctor. Nam viverra orci id sapien sollicitudin, a aliquam lacus suscipit. Quisque ac tincidunt leo Code~\ref{src:cpp} and \ref{src:csharp}:
+My task here was 
 
-\lstset{caption={Hello World in C++}, label=src:cpp}
-\begin{lstlisting}[language={C++}]
-#include <stdio>
+\begin{itemize}
+    \item to initialize and start the Wrangler Language Server if it enabled in the configuration file;
+    \item and for every language feature the Wrangler Language Server provides,
+    \begin{itemize}
+        \item modify the existing providers to return not just only the responses of the Erlang Language Server but the Wrangler ones also
+        \item or develop a new provider that returns the responses of the Wrangler Language Server.
+    \end{itemize}
+\end{itemize}
 
-int main() 
-{
-	int c;
-	std::cout << "Hello World!" << std::endl;
+Namely, I initialized Wrangler in the \tt els\_config:do\_initialize/4\rm\ function, modified the \tt  els\_code\_action\_provider, els\_code\_lens\_provider, els\_document\_highlight\_provider, els\_execute\_command\_provider\rm\ providers, and created and registered a new \tt els\_semantic\_provider\rm\ module. To separate the Wrangler related functions, I made a \tt wrangler\_handler\rm\ utility module.
 
-	std::cout << "Press any key to exit." << std::endl;
-	std::cin >> c;
-	
-	return 0;
-}
+These tasks are expounded below.
+
+\subsubsection{Initializing Wrangler}
+
+If Wrangler is enabled in the configuration file, it is loaded into the application with the \tt application:load(wrangler)\rm\ call. If Wrangler is not installed on the system, it is first added with the \tt code:add\_path(Path)\rm\ based on the path provided in the configuration file. Lastly, the Wrangler application is started (\tt api\_wrangler:start(\#{wls\_server => true})\rm ). Wrangler's configuration is saved for later use.
+
+The full code snippet complemented with logging is as follows \ref{src:wrangler-init}.
+
+\lstset{caption={Initializing Wrangler in the els\_config:do\_initialize/4 function}, label=src:wrangler-init}
+\begin{lstlisting}[language=erlang]
+  case maps:get("wrangler", Config, notconfigured) of
+    notconfigured -> ok = set(wrangler, notconfigured);
+    Wrangler ->
+      ok = set(wrangler, Wrangler),
+      case maps:get("path", Wrangler, notconfigured) of
+        notconfigured -> ?LOG_INFO("Wrangler path is not configured, assuming it is installed system-wide.");
+        Path ->
+          case code:add_path(Path) of
+            true -> ok;
+            {error, bad_directory} ->
+              ?LOG_INFO("Wrangler path is configured but not a valid ebin directory: ~p", [Path])
+          end
+      end,
+      case application:load(wrangler) of
+        ok ->
+          case api_wrangler:start(#{wls_server => true}) of
+            ok -> ?LOG_INFO("Wrangler started successfully");
+            {error, Reason} -> ?LOG_INFO("Wrangler could not be started: ~p", [Reason])
+          end;
+        {error, Reason} -> ?LOG_INFO("Wrangler could not be loaded: ~p", [Reason])
+      end
+  end,
+
 \end{lstlisting}
 
-\lstset{caption={Hello World in C\#}, label=src:csharp}
-\begin{lstlisting}[language={[Sharp]C}]
-using System;
-namespace HelloWorld
-{
-	class Hello 
-	{
-		static void Main() 
-		{
-			Console.WriteLine("Hello World!");
-			
-			Console.WriteLine("Press any key to exit.");
-			Console.ReadKey();
-		}
-	}
-}
+
+\subsubsection{Modifying existing providers}
+
+Modifying existing providers are presented through the example of code actions.
+
+If Wrangler is enabled, a function defined in Wrangler called \ref{src:code-action-getter} to return the code actions calculated by the Wrangler Language Server. Then, this is appended to the response \ref{src:code-action-provider}. 
+
+If Wrangler is not enabled, neutral elements are appended to the response (an empty list, in particular).
+
+\lstset{caption={Wrangler Code Action getters in the wrangler\_handler module.}, label=src:code-action-getter}
+\begin{lstlisting}[language=erlang]
+-spec get_code_actions(uri(), range()) -> [map()].
+get_code_actions(Uri, Range) ->
+  case is_enabled() of % Wrangler is enabled
+    true ->
+      case wls_code_actions:get_actions(Uri, Range) of % defined in Wrangler
+        [] -> [];
+        Actions ->
+          ?LOG_INFO("Wrangler Code Actions: ~p", [Actions]),
+          Actions
+      end;
+    false -> []
+  end.
 \end{lstlisting}
 
+\lstset{caption={Appending Wrangler code actions to the original ones in the els\_code\_action\_provider module.}, label=src:code-action-provider}
+\begin{lstlisting}[language=erlang]
+code_actions(Uri, Range, #{<<"diagnostics">> := Diagnostics}) ->
+  lists:flatten([make_code_action(Uri, D) || D <- Diagnostics])
+    ++ wrangler_handler:get_code_actions(Uri, Range).
+\end{lstlisting}
 
-A general Interval Branch and Bound algorithm is shown in Algorithm~\ref{alg:ibb}. An appropriate selection rule is applied in Step~\ref{step:selrule}.\\
-Source of example: \href{https://www.inf.u-szeged.hu/actacybernetica/}{Acta Cybernetica (this is a hyperlink)}.
+The other providers are working similarly, although the implementation depends on the response's data types.
 
-\begin{algorithm}[H]
-\caption{A general interval B\&B algorithm} 
-\label{alg:ibb} 
-\textbf{\underline{Funct}} IBB($S,f$)
-\begin{algorithmic}[1] % display line numbers before every n line, here n = 1
-\State Set the working list ${\cal L}_W$ := $\{S\}$ and the final list ${\cal L}_Q$ := $\{\}$     
-\While{( ${\cal L}_W \neq \emptyset$ )} \label{alg:igoend}
-	\State  Select an interval $X$ from ${\cal L}_W$ \label{step:selrule}\Comment{Selection rule}  
-	\State Compute $lbf(X)$ \Comment{Bounding rule}		  
-	\If{$X$ cannot be eliminated} \Comment{Elimination rule}
-		\State Divide $X$ into $X^j,\ j=1,\dots, p$, subintervals   \Comment{Division rule}
-		\For{$j=1,\ldots,p$}
-			\If{$X^j$ satisfies the termination criterion} \Comment{Termination rule}
-				\State Store $X^j$ in ${\cal L}_W$ 
-			\Else
-				\State Store $X^j$ in ${\cal L}_W$ 
-			\EndIf
-		\EndFor  
-	\EndIf
-\EndWhile
-\State \textbf{return} ${\cal L}_Q$
-\end{algorithmic}
-\end{algorithm}
+\begin{note}
+For more transparent Wrangler Forms \todo{missing reference}, in the case of highlights, the response of Wrangler takes precedence over the original response. 
+\end{note}
+
+\subsubsection{Creating new providers}
+
+These providers alone are simple as they only return the responses from our \tt wrangler\_handler\rm\ similarly as above \ref{src:code-action-provider}.
+
+The whole provider looks like the following.
+\todo{Semantic\_token\_provider code}
+
+Besides from creating a provider that handles the LSP requests, the provider and the new supported language feature has to be registered at the following places: 
+
+\begin{itemize}
+    \item \tt els\_methods\rm
+    \item \tt els\_general\_provider\rm \todo{what to do there}
+    \item \tt els\_provider\rm : the module's name needs to be added in \tt available\_providers/0\rm . 
+\end{itemize}
+
+
+\subsection{The Wrangler Language Server}
+
+As mentioned, Wrangler is loaded into the Erlang Language Server which calls its functions to append the results to the original responses. 
+
+\begin{note}
+As the Wrangler Language Server is embedded into the Erlang Language Server, it is not a separate server running apart, contrary to its name. However, Wrangler has its own servers, even one for the Wrangler Forms discussed later \ref{src:wrangler-forms}.
+\end{note}
+
+For every refactoring, a module implementing \tt wls\_code\_actions\rm\ has been defined.
+
+An exception to this is the \textit{comment out spec} refactoring as it is implementing the \tt wls\_code\_lens\rm\ behaviour, thus it can be initiated with a code lens instead of code actions. 
+
+
+In the case of code actions, the full process looks like the following:
+\begin{enumerate}
+    \item For a given range (set by the cursor position/highlight in the text editor), \tt wrangler\_handler\rm collects the available code actions. For each action returned by \tt wls\_code\_actions:enabled\_actions/0\rm , the \tt wls\_code\_actions:actions/3\rm constructor is called.
+    \item The constructor checks the precondition of the given refactoring \todo{something more?}, initializes it, and the returns the code action. This has been done through the code action callbacks presented below \ref{src:code-action-callbacks}.
+    \item When the user selects a refactoring, an executeCommand request is generated. The request is forwarded to each other through the \tt els\_execute\_command\_provider, wrangler\_handler, wls\_execute\_command\_provider, wls\_code\_actions \rm modules until it gets handled in the corresponing code action module's \tt execute\_command/1\rm function. This function is also part of the code action callback functions \ref{src:code-action-callbacks}.
+    \item Adding additional input is handled by the middleware, hidden in this process line. The middleware's logic is described in the next section \ref{src:middleware}.
+    \item Executing the refactorings consists of transforming the given data to Wrangler's refactoring functions' arguments and calling these functions. On failure, error messages are returned to the user with showMessage requests. 
+    
+\end{enumerate}
+
+The callback modules for the code actions look like the following \ref{src:code-action-callbacks}. As mentioned, the structure and the behaviours is similar to the ones defined in the Erlang Language Server. The differences are mainly caused by the generalization of the utilies that does not apply for refactorings.
+
+\lstset{caption={Callback functions of the wls\_code\_actions behaviour.}, label=src:code-action-callbacks}
+\begin{lstlisting}[language=erlang]
+%% Title which is shown to the user.
+-callback title() -> binary().
+
+%% Identifier of the action and the commands. 
+%% Same as the file's name without the `wls_code_action_` prefix.
+%% Use `-` instead of `_` in the identifier.
+-callback id() -> action_id().
+
+%% Initialize the action. 
+%% Optional callback.
+-callback init(els_core:uri(), els_core:range()) -> state().
+
+%% Whether the action is offered based on the highlighted range. 
+%% Optional callback, defaults to true.
+-callback precondition(els_core:uri(), els_core:range()) -> boolean().
+
+%% The command`s arguments.
+-callback command_args(els_core:uri(), els_core:range(), state()) -> map().
+
+%% Execute the command with the given arguments. 
+%% The first element of the argument list is the one returned by command_args. 
+-callback execute_command([any()]) -> [map()].
+\end{lstlisting}
+
+These refactorings need to be registered in \tt wls\_code\_actions:available\_actions/0\rm . 
+The module names must be the same ones as these values with the \tt wls\_code\_action\_\rm prefix.
+
+\todo{just mention how code lenses work}
+
+\subsubsection{Wrangler forms}
+\label{src:wrangler-forms}
+
+
+\label{src:behaviours}
+
+\subsection{A middleware in the Visual Studio Code extension}
+\label{src:middleware}
+
+\todo{description and code}
+
+\section{Testing}

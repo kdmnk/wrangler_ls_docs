@@ -1,7 +1,6 @@
 \chapter{Introduction}
 \label{ch:intro}
 
-\todo{Add notes somewhere about updating Wrangler to be up to date}
 
 \section{Motivation}
 
@@ -16,11 +15,17 @@ Developing new interfaces like these would take a long time and it would not be 
 
 That is why we choose to make a language server for Wrangler that can respond to requests defined in the Language Server Protocol. This way, Wrangler can be used in any development tool adheres to the protocol.
 
-\section{The Erlang programming language}
+Our language server extends the existing Erlang Language Server with the Wrangler refactorings. We call this extension the \emph{Wrangler Language Server}.
+
+In this paper, after the used and adherent tools are introduced, we give a description about the usage and the implementation of the Wrangler Language Server.
+
+\section{Background}
+
+\subsection{The Erlang programming language}
 
 \todo{Introduction to the Erlang language.}
 
-\section{The Wrangler refactoring tool}
+\subsection{The Wrangler refactoring tool}
 
 Wrangler is an interactive refactoring tool for the Erlang programming language.
 
@@ -32,11 +37,11 @@ Wrangler is extensible, with an API for writing new refactorings and a DSL for s
 
 Wrangler also supports testing in EUnit, QuickCheck and Common Test, so your tests are refactored automatically when you refactor your code." \cite{WranglerHome}
 
-\section{Language Server Protocol}
+\subsection{Language Server Protocol}
 
 \todo{The concept of LSP}
 
-\section{Erlang Language Server}
+\subsection{Erlang Language Server}
 
 \todo{Introduce ELS}
 
