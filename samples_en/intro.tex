@@ -1,48 +1,63 @@
 \chapter{Introduction}
 \label{ch:intro}
 
-
 \section{Motivation}
 
-\todo{Introduction to refactorings.}
+Refactoring \cite{Refactoring} is the process of restructuring existing computer code without changing its external behavior. Refactorings meant to improve the design of a program, while preserving its behaviour.
 
-Wrangler is a refactoring tool for Erlang programs that has embedded interfaces in Emacs and Eclipse.
+Wrangler is a refactoring tool for the Erlang functional programming language that has embedded interfaces in the Emacs and Eclipse text editors.
 
 The popularity of these editors are pushed back by more modern development environments like Visual Studio Code. In 2019, only 4.5\% of developers used Emacs and 14.4\% used Eclipse \cite{DevSurvey}. Wrangler needs to widen its support for more and more text editors, otherwise the majority of developers won’t be able to use it.
 
 The interfaces in the mentioned text editors are ad-hoc, editor-specific implementations. 
 Developing new interfaces like these would take a long time and it would not be easily sustainable. 
 
-That is why we choose to make a language server for Wrangler that can respond to requests defined in the Language Server Protocol. This way, Wrangler can be used in any development tool adheres to the protocol.
+That is why we choose to make an implementation of the Language Server Protocol, a protocol that is meant to give a solution to exactly this issue. It standardizes how language-specific tools, such as Wrangler communicate with development tools. 
+This way, Wrangler can be used in any development tool that adheres to the protocol.
 
 Our language server extends the existing Erlang Language Server with the Wrangler refactorings. We call this extension the \emph{Wrangler Language Server}.
 
-In this paper, after the used and adherent tools are introduced, we give a description about the usage and the implementation of the Wrangler Language Server.
+In this document, after introducing adherent tools, we give a description about the usage and the implementation of the Wrangler Language Server.
 
 \section{Background}
 
 \subsection{The Erlang programming language}
 
-\todo{Introduction to the Erlang language.}
+Erlang \cite{Erlang} is a general-purpose functional programming language that is mainly used to build concurrent, resilient and massively scalable systems and servers.
+
+\todo{something more?}
 
 \subsection{The Wrangler refactoring tool}
 
 Wrangler is an interactive refactoring tool for the Erlang programming language.
 
-"Wrangler’s refactorings cover structural changes such as function, variable and module renaming, function extraction and generalisation. Wrangler recognises macros in code, and can be used on a single file or across a whole project.
+Wrangler provide refactorings that cover structural changes such as function or variable renaming, function extraction and generalisation.
 
-Wrangler can also be used to locate and remove code clones, and to improve the module structure of projects.
+Wrangler can also be used to locate and remove code clones, and can be extended with new refactorings with an API.
 
-Wrangler is extensible, with an API for writing new refactorings and a DSL for scripting complex refactoring combinations.
+It also can be used across whole projects, not just on single files. This applies to test files also as Wrangler supports the popular testing frameworks (EUnit, QuickCheck, Common Test). This mean that the tests are refactored simultaneously with the code.
 
-Wrangler also supports testing in EUnit, QuickCheck and Common Test, so your tests are refactored automatically when you refactor your code." \cite{WranglerHome}
+More information about Wrangler is available at its website \cite{WranglerHome}.
+
 
 \subsection{Language Server Protocol}
 
-\todo{The concept of LSP}
+The Language Server Protocol (LSP) defines a communicational protocol used between development tools and language servers. A language server can be any language specific tool that provides language features like auto complete, go to definition, find all references, and, in our case, features for refactorings.
+
+The Language Server Protocol defines the basic communicational methods, data structures, error codes, various events, synchronisation methods and the structures of the mentioned language features \cite{LSP}. The messages are sent over JSON-RPC format. From the perspective of the protocol, the client is the development tool or text editor, and the server is - as the language server appellation refers to is - the language specific tool: in our case, the \emph{Wrangler Language Server} 
+
+To most obvious advantage of the protocol is that language feature providers do not need to give an implementation for all developer tools and text editors. As each of these tools have different APIs for the implementation of such features, it is a relief that a single language server implementing the features defined in the protocol can be re-used in all development tools (which are also supporting the protocol). The same applies in the other way: development tools adhering the protocol potentially have a larger selection of language-specific smarts that the ones that do not support the protocol.
+
+Other advantages of using the protocol is that it enables inter-process communication. In our work, this is reflected in the possibility that we could implement the language server in the Erlang programming language. Having the server running in an Erlang, we could easily execute the refactorings defined in Wrangler.
+
+Also, multiple language servers can be running simultaneously in a development environment.
+
+The Language Server Protocol is invented by Microsoft, but it is open source, so everyone can have a say in the development.
+
+For the sake of simplicity, the abbreviation LS will be used for the \emph{ language server}. 
 
 \subsection{Erlang Language Server}
 
-\todo{Introduce ELS}
+The Erlang Language Server \cite{ELSHome} is a language server implementing the Language Server Protocol as it provides language features for the Erlang programming language. It is also written in Erlang and its code base is available as it is an open source project.
 
-
+It give support for features like code completion, compiler diagnostics, suggesting type specs, go to definition or call hierarchy, however, before the Wrangler Language Server appeared, only renaming was supported among the refactorings. It is just a fraction of what Wrangler can provide.

@@ -7,19 +7,58 @@ My task was to create a generic integration between Wrangler and trending IDEs (
 
 The \emph{Wrangler Language Server} is a new component that provides the functionalities of the Wrangler refactoring tool (such as function and module renaming, function extraction and elimination) to any LSP-compatible code editor. We choose to do this by extending the \emph{Erlang Language Server}, an existing language server implementing the protocol.
 
-In particular, \emph{Wrangler Language Server} is part of the Wrangler project, thus it is written in Erlang, and it is running inside the \emph{Erlang Language Server} server.
+In particular, \emph{Wrangler LS} is part of the Wrangler project, thus it is written in Erlang, and it is started and run by the \emph{Erlang LS}.
 
 For this task, I had to partly redesign Wrangler’s API, and tailor the implementation of refactoring interactions to take full advantage of the Language Server Protocol’s capabilities. 
 
-This work involved the investigation of how non-standard inputs and interactions can be implemented on top of the basic features of the Language Server Protocol.
+This work involved the investigation of how non-standard inputs and interactions can be implemented on top of the basic features of the protocol.
 
-It was an additional requirement that the Wrangler Language Server had to be idiomatic, and it had to be conventional with the Erlang Language Server's structure. 
+It was an additional requirement that the Wrangler LS had to be idiomatic, and it had to be conventional with the Erlang Language Server's structure. 
 
 Furthermore, the solution is expected to require no manual setup apart from doing some simple configuration.
 
 \section{Design choices}
 
-\todo{Missing LSP inputs, Why extending ELS}
+\subsection{Language Server Protocol}
+
+The Language Server Protocol seemed to be a great choice to give support for the modern development tools, however, LSP's support for refactorings is stuck in its early stage.
+
+One cause is that the refactorings are very dependent on the programming languages and the other is that LSP do not want to limit the user interfaces how text editors handle user inputs.
+
+Thus, LSP not only does not offer a protocol for the different refactorings, it does not even give a possibility to request various inputs from the user.
+
+We had to come up with a way to acquire every data Wrangler refactorings need. Besides the ones that can be calculated from the cursor position or gained from the configuration, some refactorings usually need a new atom, variable name or file name to operate, and some need even more complex and interdependent input/output methods. 
+
+In the former case, we could collect user input through a basic text field handled by the Visual Studio Code extension's middleware.
+This is defined outside of the language server, using the text editor's extension APIs, in typescript.
+It is called a middleware because when the user starts a refactoring, while the command is being sent from the client to the server, it catches the commands of these refactorings and modify their arguments based on the user input.
+The drawback for this is that Wrangler has to come up with similar solutions for every code editor. If one of the editors does not offer any similar way to add user input to the command arguments, default values are used (for example "\tt NewVar\rm " as a new variable name).  
+
+In the latter case, the procedure we had to give an option for the users was the following:
+\begin{enumerate}
+    \item the user choose the refactoring just like any other refactoring;
+    \item highlight every code snippet where the refactoring can be executed;
+    \item give an option for the user to apply the changes at each of the highlighted code snippets.
+\end{enumerate}
+
+This can be done with some kind of form that enables us to show the refactoring candidates along with some kind of buttons. We call the solution expressed below Wrangler Forms.
+
+With LSP features, namely highlight and semantic tokens we are able to differentiate the refactoring candidates from the rest of the code. Highlight changes the text's background color in a given range, whereas semantic tokens changes the foreground color.
+
+\begin{note}
+    As its name reflects, semantic tokens meant to be used to inform the user about specific semantic information with color coding.
+    Because Erlang LS have not implemented this feature yet, this does not cause any problem, but it will be the Erlang LS's responsibility to give preference to Wrangler's tokens when Wrangler Forms are used. Highlights have the same behaviour now.
+\end{note}
+
+With code lenses, clickable text pieces can be appended to the text file at the given places. We can use these to add button-like elements next to each refactoring candidate. This way, the user can select all the candidates he/she wants to refactor, or exit the form.
+
+The drawback we had to compromise on was that manually changing the file would break the form. To avoid this, we put warnings for the users.
+
+This method is good because, unlike the previous solution for text inputs, the whole process is under the Language Server Protocol, therefore it can be used in any text editor.
+
+\subsection{The Erlang Language Server}
+
+\todo{Why extending ELS, following similar structure}
 
 \section{Used language features defined in the Language Server Protocol}
 
@@ -47,11 +86,11 @@ The protocol version \emph{3.16} were used during my thesis.
 
 \section{Implementation}
 
-The current implementation of the \emph{Wrangler Language Server} consists of three part:
+The current implementation of the \emph{Wrangler Language Server} consists of three parts:
 
 \begin{itemize}
     \item Extending the Erlang Language Server to supplement their LSP responses with the Wrangler Language Server's features.
-    \item Creating a new component in Wrangler to provide additional functionalities for the Erlang Language Server. This is the Wrangler Language Server alone.
+    \item Creating a new component in Wrangler to provide additional functionalities for Erlang LS. This is the Wrangler LS itself.
     \item Adding a middleware in the Erlang Language Server's Visual Studio Code extension to handle additional user inputs. 
 \end{itemize}
 
@@ -59,18 +98,18 @@ The current implementation of the \emph{Wrangler Language Server} consists of th
 
 \subsection{Extending the Erlang Language Server}
 
-The Erlang Language Server introduced separate erlang modules called \tt provider\rm s for each language feature (for example, code lenses). These providers implement the \tt els\_provider\rm  erlang behaviour and handle the corresponding requests coming from the client. \todo{diagram??}
+The Erlang Language Server introduced separate erlang modules called \tt provider\rm s for each language feature (for example, code lenses). These providers implement the \tt els\_provider\rm\ erlang behaviour and handle the corresponding requests coming from the client. \todo{diagram??}
 
-In the case of code lenses, the different lenses are places in their own modules. Each code lens module implements the \tt els\_code\_lens\rm  erlang behaviour. The provider gather the available code lenses through these modules. These are expressed in more detail in the next section since the Wrangler Language Server has corresponding modules. \label{src:behaviours} 
+In the case of code lenses, the different lenses are placed in their own modules. Each code lens module implements the \tt els\_code\_lens\rm\  erlang behaviour. The provider gathers the available code lenses through these modules. These are expressed in more detail in the next section since the Wrangler LS has corresponding modules. \label{src:behaviours} 
 
 My task here was 
 
 \begin{itemize}
-    \item to initialize and start the Wrangler Language Server if it enabled in the configuration file;
-    \item and for every language feature the Wrangler Language Server provides,
+    \item to initialize and start the Wrangler LS if it enabled in the configuration file;
+    \item and for every language feature Wrangler LS provides,
     \begin{itemize}
-        \item modify the existing providers to return not just only the responses of the Erlang Language Server but the Wrangler ones also
-        \item or develop a new provider that returns the responses of the Wrangler Language Server.
+        \item modify the existing providers to return not just only the responses of the Erlang LS but the Wrangler ones also
+        \item or develop a new provider that returns the responses of the Wrangler LS.
     \end{itemize}
 \end{itemize}
 
@@ -116,7 +155,7 @@ The full code snippet complemented with logging is as follows \ref{src:wrangler-
 
 Modifying existing providers are presented through the example of code actions.
 
-If Wrangler is enabled, a function defined in Wrangler called \ref{src:code-action-getter} to return the code actions calculated by the Wrangler Language Server. Then, this is appended to the response \ref{src:code-action-provider}. 
+If Wrangler is enabled, a function defined in Wrangler called \ref{src:code-action-getter} to return the code actions calculated by Wrangler LS. Then, this is appended to the response \ref{src:code-action-provider}. 
 
 If Wrangler is not enabled, neutral elements are appended to the response (an empty list, in particular).
 
@@ -170,7 +209,7 @@ Besides from creating a provider that handles the LSP requests, the provider and
 As mentioned, Wrangler is loaded into the Erlang Language Server which calls its functions to append the results to the original responses. 
 
 \begin{note}
-As the Wrangler Language Server is embedded into the Erlang Language Server, it is not a separate server running apart, contrary to its name. However, Wrangler has its own servers, even one for the Wrangler Forms discussed later \ref{src:wrangler-forms}.
+As Wrangler LS is embedded into Erlang LS, it is not a separate server running apart, contrary to its name. However, Wrangler has its own servers, even one for the Wrangler Forms discussed later \ref{src:wrangler-forms}.
 \end{note}
 
 For every refactoring, a module implementing \tt wls\_code\_actions\rm\ has been defined.
@@ -219,17 +258,48 @@ The callback modules for the code actions look like the following \ref{src:code-
 These refactorings need to be registered in \tt wls\_code\_actions:available\_actions/0\rm . 
 The module names must be the same ones as these values with the \tt wls\_code\_action\_\rm prefix.
 
+
 \todo{just mention how code lenses work}
 
-\subsubsection{Wrangler forms}
+\todo{mention wls\_utils to convert between the data representations}
+
+\subsubsection{Wrangler Form}
 \label{src:wrangler-forms}
 
+There are some special refactorings for which the solutions discussed above does not work.
+
+These refactorings need more diversified user inputs, in general, the user should be able to see and select one by one the refactoring candidates - the code snippets where the user want to apply the refactoring among all the possibilities.\todo{rephrase}
+
+For these refactorings, we introduced Wrangler Forms: a user interface implemented with LSP features to highlight and select these refactoring candidates.
+
+\todo{description of the cache server, the form's mechanism}
+
+...
+Every time a refactoring candidate has been selected, the refactoring takes place, and the form refreshes with one candidate less.
+...
 
 \label{src:behaviours}
 
 \subsection{A middleware in the Visual Studio Code extension}
 \label{src:middleware}
 
-\todo{description and code}
+\todo{description}
+
+\lstset{caption={The command arguments before the middleware}, label=src:middleware-input}
+\begin{lstlisting}[language=erlang]
+  [#{ 'range' => Range
+   , 'uri' => Uri
+   , 'user_input' => #{'type' => variable, 'text' => <<"New argument's name">>}
+  }].
+\end{lstlisting}
+
+\lstset{caption={The command arguments after the middleware}, label=src:middleware-output}
+\begin{lstlisting}[language=erlang]
+  [#{ 'range' => Range
+   , 'uri' => Uri
+   , 'user_input' => #{'type' => variable, 'text' => <<"New argument's name">>, 'value' => <<"NewVar">>}
+  }].
+\end{lstlisting}
+
 
 \section{Testing}

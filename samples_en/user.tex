@@ -3,17 +3,17 @@
 
 The Wrangler Language Server is a tool that enables developers to use the refactorings defined in Wrangler through the Erlang Language Server.
 
-In this paper, the set up, the examples and the screenshots are presented for the development tool called Visual Studio Code owned my Microsoft. \todo{recompose}
+In this document, the set up, the examples and the screenshots are presented for the Visual Studio Code text editor.
 
-Installing Wrangler includes installing the Wrangler Language Server, but it is started by and ran in the Erlang Language Server (that is started by and ran in the development tool). \todo{check phrasing}
-In order to use the Wrangler Language Server, further configuration is needed in the Erlang Language Server.
+Installing Wrangler includes installing Wrangler LS, but it is started and run by Erlang LS (which is started and run by the development tool).
+In order to use Wrangler LS, further configuration is needed in the Erlang LS.
 
 \section{System requirements}
 
-The system requirements for the Wrangler Language Server is constrained by the underlying tools' (namely the Erlang Language Server, Wrangler itself and the development tool: Visual Studio Code) requirements:
+The system requirements for the Wrangler LS is constrained by the underlying tools' (namely the Erlang LS, Wrangler itself and the development tool: Visual Studio Code) requirements:
 
 \begin{enumerate}
-    \item Hardware requirements: \todo{Check harware requirements}
+    \item Hardware requirements: \todo{Check hardware requirements}
     \begin{itemize}
         \item 1.6 GHz or faster processor is recommended by Visual Studio Code 
         \cite{VSCodeRequirements}
@@ -35,11 +35,13 @@ The system requirements for the Wrangler Language Server is constrained by the u
 
 \section{Installing and configuration}
 
+Wrangler's codebase, Visual Studio Code's installer and a Visual Studio Code extension installer (.vsix file) for the Erlang LS can be found in the thesis's appendix.
+
+Alternatively, all necessary files can be downloaded from the websites of each tool \cite{WranglerGitHub, VSCodeDownload, ELSExtension}
+
 \subsection{Installing Wrangler}
 
-First, download or clone the Wrangler code base from its GitHub repository \cite{WranglerGitHub}. More information about cloning repositories can be found in GitHub Docs \cite{GitCloneTutorial}.
-
-Then build and install Wrangler with the command below \ref{src:install}.
+Wrangler needs to be compiled and installed with the command below \ref{src:install}.
 
 \lstset{caption={Build and install Wrangler}, label=src:install}
 \begin{lstlisting}[language=bash]
@@ -52,17 +54,25 @@ As mentioned, installing Wrangler will also install the Wrangler Language Server
 
 \subsection{Installing Visual Studio Code}
 
-A detailed walk-through is available about installing Visual Studio Code at their website \cite{VSCodeDownload}.
+Installing Visual Studio Code with its installer should be straightforward, but a detailed walk-through is available about installation process at their website \cite{VSCodeDownload}.
 
 \subsection{Installing the Erlang Language Server}
 
-The Erlang Language Server for Visual Studio Code is available as a dedicated extension called \emph{Erlang LS} \cite{ELSExtension}.
+Once Visual Studio Code is installed, Erlang LS can be installed with the command below \ref{src:install-els}, providing the path to the \tt .vsix\rm\ file.
 
-A guide to install the Erlang Language Server in Visual Studio Code (and also for other development tools) is available at their website \cite{ELSInstall}.
+\lstset{caption={install Wrangler}, label=src:install-els}
+\begin{lstlisting}[language=bash]
+  code --install-extension els.vsix
+\end{lstlisting}
+
+Alternatively, the extension can be up automatically downloaded and installed from Visual Studio Code's marketplace \cite{ELSInstall}.
 
 \subsection{Configuring the Wrangler Language Server}
 
-A configuration file named \emph{erlang\_ls.config} should be placed in the root directory of every project where Wrangler need to be used.
+A configuration file named \emph{erlang\_ls.config} should be placed in the root directory of every project where Wrangler needs to be used.
+\begin{note}
+Global configuration options are also available, as discussed on Erlang LS's website \cite{ELSConfig}.
+\end{note}
 
 A configuration example \ref{src:wrangler-config-example} and the description of the parameters \ref{tab:wrangler-config-descr} are shown below.
 
@@ -108,17 +118,22 @@ Further configuration options for the Erlang Language Server can be found at the
 
 \section{Usage}
 
-The Erlang Language Server starts automatically when an Erlang file is opened in the code editor. If Wrangler is enabled, the Erlang Language Server loads and starts it during initialization. After that, the refactorings should be accessible.
+The Erlang Language Server starts automatically when an Erlang file is opened in the code editor. If Wrangler is enabled, the Erlang LS loads and starts it during initialization. After that, the refactorings should be accessible.
 
 We classify the supported refactorings into two (plus one) groups based on their user input needs. We distinguish refactorings that require a simple value as its input (for example, a new argument's name) and refactorings for which simple inputs are not enough. In this paper, we call these groups \emph{simple} and \emph{complex} refactorings\footnote{The appelations do not imply any relation with the complexity of the refactorings' implementation.}. 
 
 There is also a third category for special, module related refactorings described below.
 
-In the sections below, after presenting the general use cases of the refactorings depending on the mentioned input types, the list of the supported refactorings are shown. In the list, after each refactoring's name, their identification value is presented, along with a brief description, their precondition, side condition(s) and an example. The preconditions show what the user need to do to get the refactoring offered by the language server.
+In the sections below, after presenting the general use cases of the refactorings depending on the mentioned input types, the list of the supported refactorings are shown. In the list, after each refactoring's name, their identification value is presented, along with a brief description, their precondition, side effect(s) and an example. The preconditions show what the user need to do to get the refactoring offered by the language server.
 
 \subsection{Simple refactorings}
 
-\todo{add description and edit use case diagram}
+These refactorings are based on text inputs. An input field \todo{cite picture} that accepts valid erlang atoms or variables appear when the refactorings are selected. On invalid input, a red error message appears.
+\todo{valid and invalid input screenshots}
+
+In some cases, a file name has to be chosen with Visual Studio Code's file selector menu.
+\todo{file selector screenshot}
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1\textwidth]{images/use_case_1.png}
@@ -128,7 +143,7 @@ In the sections below, after presenting the general use cases of the refactoring
 
 \begin{description}
 	\item[Generalise function / \textit{generalise-fun}:] 
-	Refactor the highlighted expression as the function's new argument. 
+	Refactor the highlighted expression as the function's new argument
 	\\Precondition: highlight an expression.
 	\\Asked user input: A variable name for the function's new argument. 
 	\\Before refactoring:
@@ -136,8 +151,50 @@ In the sections below, after presenting the general use cases of the refactoring
 	\\After refactoring:
 	\\Side effect: ...
 	\item[Introduce new variable / \textit{new-var}] Refactor the highlighted expression as a new variable.
-	\todo{add the remaining refactorings}
+	\\Precondition: highlight an expression.
+	\\Asked user input: A variable name for the function's new argument. 
+	\\Before refactoring:
+	\todo{screenshots}
+	\\After refactoring:
+	\\Side effect: ...
+	\item[Move function / \textit{move-fun}] Move a function definition from its current module to another module. It changes all function calls in the working directory.
+	\\Precondition: highlight an expression.
+	\\Asked user input: A variable name for the function's new argument. 
+	\\Before refactoring:
+	\todo{screenshots}
+	\\After refactoring:
+	\\Side effect: ...
+	\item[Extract function / \textit{new-fun}] Introduce a new function definition to represent a selected expression sequence inside an existing function. That selected sequence of expressions is replaced by a call to the new function.
+	\\Precondition: highlight an expression.
+	\\Asked user input: A variable name for the function's new argument. 
+	\\Before refactoring:
+	\todo{screenshots}
+	\\After refactoring:
+	\\Side effect: ...
+	\item[New macro / \textit{new-macro}] Define a macro to represent a selected sequence of expressions.
+	\\Precondition: highlight an expression.
+	\\Asked user input: A variable name for the function's new argument. 
+	\\Before refactoring:
+	\todo{screenshots}
+	\\After refactoring:
+	\\Side effect: ...
+	\item[Rename function / \textit{rename-fun2}] Rename a function.
+	\\Precondition: highlight an expression.
+	\\Asked user input: A variable name for the function's new argument. 
+	\\Before refactoring:
+	\todo{screenshots}
+	\\After refactoring:
+	\\Side effect: ...
+	\item[Rename variable / \textit{rename-var}] Rename a variable.
+	\\Precondition: highlight an expression.
+	\\Asked user input: A variable name for the function's new argument. 
+	\\Before refactoring:
+	\todo{screenshots}
+	\\After refactoring:
+	\\Side effect: ...
 \end{description}
+
+\todo{errors}
 
 \subsection{Complex refactorings}
 
