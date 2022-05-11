@@ -20,6 +20,7 @@ Furthermore, the solution is expected to require no manual setup apart from doin
 \section{Design choices}
 
 \subsection{Language Server Protocol}
+\label{src:lsp-design-choices}
 
 The Language Server Protocol seemed to be a great choice to give support for the modern development tools, however, LSP's support for refactorings is stuck in its early stage.
 
@@ -268,11 +269,13 @@ The module names must be the same ones as these values with the \tt wls\_code\_a
 
 There are some special refactorings for which the solutions discussed above does not work.
 
-These refactorings need more diversified user inputs, in general, the user should be able to see and select one by one the refactoring candidates - the code snippets where the user want to apply the refactoring among all the possibilities.\todo{rephrase}
+These refactorings need more diversified user inputs: in general, the user should be able to see and select the refactoring candidates one by one. These candidates represents the code snippets where the refactoring can applied.
 
-For these refactorings, we introduced Wrangler Forms: a user interface implemented with LSP features to highlight and select these refactoring candidates.
+For these refactorings, we introduced Wrangler Forms: a user interface implemented with LSP features to highlight and select these refactoring candidates. The design choice behind this is discussed in section \ref{src:lsp-design-choices}.
 
-\todo{description of the cache server, the form's mechanism}
+The state of these forms are stored \tt wls\_server\rm , an erlang \tt gen\_server\rm that stores the following data structure:
+
+\todo{wls\_form data structure}
 
 ...
 Every time a refactoring candidate has been selected, the refactoring takes place, and the form refreshes with one candidate less.

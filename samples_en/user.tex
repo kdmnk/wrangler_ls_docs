@@ -15,10 +15,10 @@ The system requirements for the Wrangler LS is constrained by the underlying too
 \begin{enumerate}
     \item Hardware requirements: \todo{Check hardware requirements}
     \begin{itemize}
-        \item 1.6 GHz or faster processor is recommended by Visual Studio Code 
+        \item 1.6 GHz or faster processor is recommended by Visual Studio Code
         \cite{VSCodeRequirements}
-        \item 1 GB of RAM is recommended by Visual Studio Code  \cite{VSCodeRequirements}
-        \item 500\todo{+x} MB free space on the hard drive is needed to install Visual Studio Code, Wrangler and the Erlang
+        \item 1 GB of RAM is recommended by Visual Studio Code \cite{VSCodeRequirements}
+        \item 500 MB free space on the hard drive is needed to install Visual Studio Code, Wrangler and the Erlang
     \end{itemize}
     \item Software requirements:
     \begin{itemize}
@@ -127,12 +127,35 @@ There is also a third category for special, module related refactorings describe
 In the sections below, after presenting the general use cases of the refactorings depending on the mentioned input types, the list of the supported refactorings are shown. In the list, after each refactoring's name, their identification value is presented, along with a brief description, their precondition, side effect(s) and an example. The preconditions show what the user need to do to get the refactoring offered by the language server.
 
 \subsection{Simple refactorings}
+\label{src:simple-ref}
 
-These refactorings are based on text inputs. An input field \todo{cite picture} that accepts valid erlang atoms or variables appear when the refactorings are selected. On invalid input, a red error message appears.
-\todo{valid and invalid input screenshots}
+The refactorings can be initiated when a certain code piece is highlighted or the cursor is set to a specific location. Then, the possible refactorings appear in the form of code actions from which the user can choose from \ref{fig:codeactions}.
 
-In some cases, a file name has to be chosen with Visual Studio Code's file selector menu.
-\todo{file selector screenshot}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{images/code_actions.png}
+	\caption{Code Actions showing the possible refactorings.}
+	\label{fig:codeactions}
+\end{figure}
+
+These refactorings are based on text inputs. An input field that accepts valid erlang atoms or variables appear when the refactorings are selected \ref{fig:input}. On invalid input, a red error message appears \ref{fig:input-invalid}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{images/valid_input.png}
+	\caption{Input field for Erlang atoms}
+	\label{fig:input}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{images/valid_input.png}
+	\caption{Invalid input}
+	\label{fig:input-invalid}
+\end{figure}
+
+
+In some cases, a file name has to be chosen with the a file selector menu based on the system.
 
 \begin{figure}[H]
 	\centering
@@ -147,58 +170,121 @@ In some cases, a file name has to be chosen with Visual Studio Code's file selec
 	\\Precondition: highlight an expression.
 	\\Asked user input: A variable name for the function's new argument. 
 	\\Before refactoring:
-	\todo{screenshots}
-	\\After refactoring:
-	\\Side effect: ...
-	\item[Introduce new variable / \textit{new-var}] Refactor the highlighted expression as a new variable.
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/gen_before.png}
+    \end{figure}
+	After refactoring:
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/gen_after.png}
+    \end{figure}
+	Side effect: The preserve the behaviour, the original function clause is modified.
+	\item[Introduce new variable / \textit{new-var}] Introduce a new variable with the value of the highlighted expression.
 	\\Precondition: highlight an expression.
 	\\Asked user input: A variable name for the function's new argument. 
 	\\Before refactoring:
-	\todo{screenshots}
-	\\After refactoring:
-	\\Side effect: ...
-	\item[Move function / \textit{move-fun}] Move a function definition from its current module to another module. It changes all function calls in the working directory.
-	\\Precondition: highlight an expression.
-	\\Asked user input: A variable name for the function's new argument. 
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/new_var_before.png}
+    \end{figure}
+	After refactoring:
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/new_var_after.png}
+    \end{figure}
+	Side effect: The original expression gets replaced by the new variable.
+	\item[Move function / \textit{move-fun}] Move a function definition from its current module to another module.
+	\\Precondition: set the cursor to a function name or inside its definition.
+	\\Asked user input: The file where the function definition should be moved. 
+	Side effect: It changes all function calls in the search paths to the new module.
+	\item[Extract function / \textit{new-fun}] Introduce a new function definition to represent a selected expression sequence inside an existing function. 
+	\\Precondition: highlight an expression sequence.
+	\\Asked user input: A variable name for the new function's name. 
 	\\Before refactoring:
-	\todo{screenshots}
-	\\After refactoring:
-	\\Side effect: ...
-	\item[Extract function / \textit{new-fun}] Introduce a new function definition to represent a selected expression sequence inside an existing function. That selected sequence of expressions is replaced by a call to the new function.
-	\\Precondition: highlight an expression.
-	\\Asked user input: A variable name for the function's new argument. 
-	\\Before refactoring:
-	\todo{screenshots}
-	\\After refactoring:
-	\\Side effect: ...
-	\item[New macro / \textit{new-macro}] Define a macro to represent a selected sequence of expressions.
-	\\Precondition: highlight an expression.
-	\\Asked user input: A variable name for the function's new argument. 
-	\\Before refactoring:
-	\todo{screenshots}
-	\\After refactoring:
-	\\Side effect: ...
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/extract_before.png}
+    \end{figure}
+	After refactoring:
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/extract_after.png}
+    \end{figure}
+	Side effect: The selected sequence of expressions is replaced by a call of the new function.
+	\item[New macro / \textit{new-macro}] Define a macro to represent a selected sequence of expressions or patterns.
+	\\Precondition: highlight an expression or pattern list.
+	\\Asked user input: The new macro's name. 
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/macro_before.png}
+    \end{figure}
+	After refactoring:
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/macro_after.png}
+    \end{figure}
+	Side effect: The selected expressions or patterns are replaced by the new macro.
 	\item[Rename function / \textit{rename-fun2}] Rename a function.
-	\\Precondition: highlight an expression.
-	\\Asked user input: A variable name for the function's new argument. 
+	\\Precondition: set the cursor position to a function name.
+	\\Asked user input: A name for the function's new name. 
 	\\Before refactoring:
-	\todo{screenshots}
-	\\After refactoring:
-	\\Side effect: ...
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/rename_fun_before.png}
+    \end{figure}
+	After refactoring:
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/rename_fun_after.png}
+    \end{figure}
+	Side effect: All the function calls and references are changed (including exports and specs).
 	\item[Rename variable / \textit{rename-var}] Rename a variable.
-	\\Precondition: highlight an expression.
-	\\Asked user input: A variable name for the function's new argument. 
-	\\Before refactoring:
-	\todo{screenshots}
-	\\After refactoring:
-	\\Side effect: ...
+	\\Precondition: highlight or set the cursor position to a variable.
+	\\Asked user input: The variable's new name. 
+    \begin{figure}[H]
+	\centering
+	\includegraphics[]{images/rename_var_before.png}
+    \end{figure}
+	After refactoring:
+	\begin{figure}[H]
+	\centering
+	\includegraphics[]{images/rename_var_after.png}
+    \end{figure}
+	Side effect: The variable changes everywhere where it is used.
 \end{description}
 
-\todo{errors}
+\subsubsection{Possible errors}
+
+Various errors can be thrown in Wrangler during refactorings. These may occur because Wrangler is unable to determine whether it can safely perform the modifications, or because the preconditions for refactorings are not met.
+If an error is triggered, the changes will be reverted to the code's original state and an error message describing the cause appears for the user \ref{fig:error}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{images/errors.png}
+\caption{An example error message for renaming functions.}
+\label{fig:error}
+\end{figure}
 
 \subsection{Complex refactorings}
 
-\todo{use case, description, and example for Wrangler Forms}
+Complex refactorings differ from simple refactorings only in the way the input is requested. Everything else described in the previous section \ref{src:simple-ref} applies to them also.
+
+Instead of requesting text input, the file to be modified transforms into a form we call Wrangler Forms.
+
+The refactorings using these forms work by allowing the user to select each option where refactoring can be applied. These refactoring candidates get highlighted in the file and buttons (called code lenses) appear above each of them with which the refactorings can be executed or the form can be closed.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{images/use_case_2.png}
+	\caption{Use case diagram for complex refactorings using Wrangler Forms}
+	\label{fig:usecase2}
+\end{figure}
+
+
+Currently, expression folding uses these format. With fold, a function
+
+
 \todo{Fold refactoring}
 
 \subsection{Other refactorings}
